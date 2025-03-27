@@ -1,0 +1,485 @@
+<html>
+    <head>
+            <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <title>Path test !</title>
+    </head>
+    <style>
+        .zone-tir {
+            border:1px solid #d3d3d3;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+        }
+        .site-header {
+            background-color: rgba(0, 0, 0, .85);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            backdrop-filter: saturate(180%) blur(20px);
+        }
+        .site-header a {
+        color: #999;
+        transition: ease-in-out color .15s;
+        }
+        .slider {
+  -webkit-appearance: none;
+  width: 100;
+  height: 10px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  transform: rotate(270deg);
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: blue;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #4CAF50;
+  cursor: pointer;
+}
+    </style>
+    <body onload="StartGame()">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script
+  src="https://code.jquery.com/jquery-3.5.0.js"
+  integrity="sha256-r/AaFHrszJtwpe+tHyNi/XCfMxYpbsRg2Uqn0x3s2zc="
+  crossorigin="anonymous"></script>
+  <nav class="site-header sticky-top py-1">
+  <div class="container d-flex flex-column flex-md-row justify-content-between">
+    <a class="py-2" href="#" aria-label="Product">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="d-block mx-auto" role="img" viewBox="0 0 24 24" focusable="false"><title>Product</title><circle cx="12" cy="12" r="10"></circle><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94"></path></svg>
+    </a>
+    <a class="py-2 d-none d-md-inline-block" href="PremierPHP.php">Connection</a>
+    <a class="py-2 d-none d-md-inline-block" href="Inscription.php">Inscription</a>
+    <a class="py-2 d-none d-md-inline-block" href="#">Fonctionnement</a>
+    <a class="py-2 d-none d-md-inline-block" href="#">Créateurs</a>
+  </div>
+</nav>
+        <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
+        
+                
+                <h3>Pressez <a class='btn btn-outline-secondary' herf='#'>O</a> et <a class='btn btn-outline-secondary' herf='#'>L</a> pour le canon, <br />
+                <a class='btn btn-outline-secondary' herf='#'>Z</a> et <a class='btn btn-outline-secondary' herf='#'>S</a> pour la puissance et <a class='btn btn-outline-secondary' herf='#'>Espace </a> pour tirer. </h3>
+                <h6>Pour activer le mode tactile switchez : <div class='custom-control custom-switch'>
+                <input type='checkbox' class='custom-control-input' id='customSwitch1' onchange='Switcher()'>
+                <label class='custom-control-label' for='customSwitch1' id='State'>Desactivé</label>
+              </div>
+            
+        
+        </div>
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange" onchange='RangeV()'>
+        
+        <div style = "text-align:center;" id="Zone">
+
+        <canvas id = 'canvas' width='100%' height='100%' class='zone-tir' onmousedown='WhichButton(event)'>
+        </div>
+        <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
+        <p>Regardez, il y a des plus cons que vous !</p> 
+        <div id="Players"></div>
+        </div>
+            <script>
+                var gun = 0;
+                var keyboard = 0;
+                var PiValue = 0;
+                var RotationValue = 90;
+                var canvas;
+                var ctx;
+                var clicked;
+                var displayingShell = false;
+                var movex = 0;
+                var movey = 0;
+                var FirstRotationValue = 0;
+                var gravitySpeed = 0.1;
+                var fall = false;
+                var objectif = true;
+                var RandomX = 0;
+                var RandomY = 0;
+                var Objective = 0;
+                var shellSpeed = 7;
+                var shellLength = 20;
+                var canonLength = 50;
+                var hypotenuse = 0;
+                var dx = 0;
+                var dy = 0;
+                var displaytext = 0;
+                var points = 10;
+                var shelldisplay = false;
+                var essais = 0;
+                var score = 0;
+                var pointsAafficher = 0;
+                var PowerJauge = 0;
+                var PiValue2 = 0;
+                var shellSpeed2 = 7;
+                var Completed = 2;
+                var RatioRectangle = [
+                    [2, 1, 2, 1]
+                ];
+                var Périmètre = 0;
+                var Quotient = 0;
+                var Type = 0;
+                var rad = 200;
+                var PIValue3 = 0;
+                var RotationValue2 = 0;
+                var shell = new Array();
+                var Chrono = 0;
+                var Attest = true;
+                var AfficheText = false;
+                var Connected = 0;
+                var SwitchState = 0;
+                var ResolutionX = 0;
+                var ResolutionY = 0;
+                var Slider1 = 0;
+                var Slider2 = 0;
+                var pos = {x:0, y:0};
+                var Touch = false;
+                var Progress = 100;
+                var PositionM = 0;
+                var getRvalue = 0;
+                var deegresV = 0;
+                function StartGame() {
+                    canvas = document.getElementById('canvas');
+                    ResolutionX = 1000*screen.width/1440;
+                    ResolutionY = 500*screen.height/900;
+                    canvas.width = screen.width-100;
+                    canvas.height = ResolutionY;
+                    gravity = 0;
+                    var a = 0;
+                    for (i=0; i<9; i++) {
+                        a+=1;
+                        console.log(i);
+                    }
+                    console.log(a);
+                    Type = Math.floor(Math.random() * (3-1)+1);
+                    ctx = canvas.getContext('2d');
+                    gun = new canon(60, canvas.height-100, 0);
+                    Périmètre = Math.random() * (1000-200)+200;
+                    Objective = new cible(canvas.width, canvas.height, Type);
+                    PowerJauge = new Jauge(canvas.width-50, 50);
+                    gun.display();
+                    window.setInterval(Update, 20);
+                    window.setInterval(Request, 1000);
+                    canvas.addEventListener('mousemove', setPosition); // L'événement se produit lorsque le pointeur se déplace au-dessus d'un élément ou de ses enfants.
+                    canvas.addEventListener('mousedown', setPosition); //  declenche un évènement quand on appuie sur un bouton.
+                    document.addEventListener('mouseenter', setPosition);
+                    window.addEventListener('keydown', function (e) {
+                        keyboard = e.keyCode;
+                    })
+                    window.addEventListener('keyup', function (e) {
+                        keyboard = false;
+                    })
+                    Completed = 2;
+                }
+                function WhichButton(event) {
+                    clicked = true;
+                }
+                function setPosition(e) {
+                    pos.x = e.offsetX; //  clientX = Renvoie la coordonnée horizontale du pointeur de la souris par rapport à la fenêtre courante.
+                    pos.y = e.offsetY; //  clientY = Renvoie la coordonnée verticale du pointeur de la souris par rapport à la fenêtre courante.
+                }
+                function Update() {
+                    Touch = false;
+                    getRvalue = document.getElementById('myRange').value;
+                    deegresV = getRvalue*90/50;
+                    Progress = 50;
+                    if (pos.x > Slider1.x-Slider1.rad && pos.x < Slider1.x+Slider1.rad
+                    && pos.y > Slider1.y-Slider1.rad && pos.y < Slider1.y+Slider1.rad && SwitchState == true) {
+                        Touch = true;
+                    }
+                    if (pos.y<canvas.height-50 && 
+                    pos.y > (canvas.height-50)-100 && pos.x > 196 && pos.x < 204 && clicked) {
+                        
+                    }
+                    if (keyboard == 79) {
+                        if (RotationValue < 170) {
+                            RotationValue++;
+                            
+                        } else {
+                            RotationValue--;
+                        }
+                    } else if (keyboard == 76) {
+                        if (RotationValue > 35) {
+                            RotationValue--;
+                            document.getElementById('myRange').value--;
+                        } else {
+                            RotationValue++;
+                        }
+                    } else if (keyboard == 32) {
+                        clicked = true;
+                    } else if (keyboard == 90) {
+                        if (shellSpeed2 < 1) {
+                            shellSpeed2 += 0.5;
+                            shellSpeed -=0.5 
+                        } else {
+                            shellSpeed2 -= 0.5; 
+                            shellSpeed +=0.5 
+                        }
+                    } else if (keyboard == 83){
+                        if (shellSpeed2> 14) {
+                            shellSpeed2 -= 0.5;
+                            shellSpeed +=0.5 
+                        } else {
+                            shellSpeed2 += 0.5;
+                            shellSpeed -=0.5 
+                        }
+                    }
+                    if (SwitchState == true) {
+                        RotationValue = deegresV; 
+                    }
+                    PiValue = RotationValue*Math.PI/180.0;
+                    PiValue2 = -(-shellSpeed2*Math.PI/-14);
+                    PowerJauge.power = PiValue2;
+                    gun.deegres = PiValue;
+                    if (clicked && Attest == true && Touch == false) {
+                        shell.push(new obus(gun.x+gun.xx, gun.y+gun.yy, gun.deegres));
+                        displayingShell = true;
+                        Attest = false;
+                    }
+                    clicked = false;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    for (var i = 0; i<shell.length; i++) {
+                        shell[i].x += shell[i].dx;                             
+                        shell[i].dy += gravitySpeed;
+                        shell[i].y+=shell[i].dy;
+                        shell[i].deegres = Math.PI/2-Math.atan(shell[i].dy / shell[i].dx);
+                        if (shell[i].y > canvas.height) {
+                            fall = true;
+                            points--;
+                            shell.splice(i, 1);
+                            i--;
+                            continue;
+                        }
+                        shell[i].display();
+//                        PiValue = RotationValue*Math.PI/180.0;
+                        dx = (shell[i].x+shell[i].xx)-Objective.x;
+                        dy = (shell[i].y+shell[i].yy)-Objective.y;
+                        hypotenuse = Math.sqrt(Math.pow(dy,2) + Math.pow(dx,2));
+                            if (hypotenuse < 25) {
+                                if (displaytext == 0) {
+                                    displaytext = 1;
+                                } else {
+                                    displaytext = 0 ;
+                                    AfficheText = false;
+                                    displaytext = 1;
+                                }
+                                shell.splice(i);
+                                score+= points;
+                                Objective.speed += 0.20;
+                                pointsAafficher = points;
+                                points = 10;
+                                displayingShell = false;
+                                Type = Math.floor(Math.random() * (3-1)+1);
+                                Objective = new cible(canvas.width, canvas.height, Type);
+                                gravity = 0;
+                                $.get("Scores.php", {score: score}, function(data) {
+                                    if (data) {
+                                        AfficheText = true;
+                                    }
+                                }, "text");
+                            }
+                    }
+                    if (Type == 1) {
+                        if (Completed > 1 && Completed < 200) {
+                            Objective.x++;
+                        } else if (Completed>200 && Completed < 300) {
+                            Objective.y--;
+                            
+                        } else if (Completed> 300 && Completed < 500) {
+                            Objective.x--;
+                            
+                        } else if (Completed> 500 && Completed < 600) {
+                            Objective.y++;
+                        } else if (Completed > 599) {
+                            Completed = 2;
+                        }
+                    } else if (Type == 2) {
+                        Objective.angle+=2*Math.PI/360;
+                    }
+                    if (Attest == false) {
+                        if (Chrono > 20) {
+                            Attest = true;
+                            Chrono = 0;
+                        } else {
+                            Attest = false;
+                        }
+                        Chrono++;
+                    }
+                    Completed++;
+                    RotationValue2++;
+                    if (displaytext > 0) {
+                            displaytext++;
+                            ctx.font = "30px Arial";
+                            ctx.fillStyle = 'green';
+                            ctx.fillText("+"+"("+pointsAafficher+")", 10, 50);
+//                            shelldisplay = false;
+                            if (AfficheText == true) {
+                                ctx.font = "30px Arial";
+                                ctx.fillStyle = 'yellow';
+                                ctx.fillText("Nouveau record !", (canvas.width/2)-50, 100);
+                            }
+                            if (displaytext > 100) {
+                                displaytext = 0 ;
+                                AfficheText = false;
+                            }
+                        }
+                    ctx.font = "30px Arial";
+                    ctx.fillStyle = 'black';
+                    ctx.fillText(score, (canvas.width/2)-50, 50);
+                    gun.display();
+                    Objective.display();
+                    PowerJauge.display();
+                    if (SwitchState == true) {
+                    
+                    }
+                }
+                function Switcher() {
+                    if (SwitchState == false) {
+                            SwitchState = true;
+                        document.getElementById("State").innerHTML = "Activé"; 
+                    } else if (SwitchState == true) {
+                        SwitchState = false;
+                        document.getElementById("State").innerHTML = "Désactivé";
+                    }
+                }
+                function Request() {
+                    $.get("Users.php",null, function(data) {
+                            document.getElementById("Players").innerHTML = data;
+                        }, "html"
+                    )
+                }
+                function RangeV() {
+                    
+                }
+                function canon(posx, posy, angle) {
+                    this.x = posx;
+                    this.y = posy;
+                    this.color = 'green';
+                    this.deegres = angle;
+                    this.display = function () {
+                        ctx.beginPath();
+                        ctx.strokeStyle = this.color;
+                        this.xx = Math.sin(this.deegres)*50;
+                        this.yy = Math.cos(this.deegres)*50;
+                        ctx.lineWidth = 5;
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineTo(this.x+this.xx, this.y+this.yy); 
+                        ctx.fillStyle = this.color;
+                        ctx.fill();
+                        ctx.stroke();
+                    }
+                }
+                function obus(posx2, posy2, angle2) {
+                    this.x = posx2;
+                    this.y = posy2;
+                    this.deegres = angle2;
+                    this.color = 'black';
+                    this.l = shellLength;
+                    this.dy = Math.cos(this.deegres)*shellSpeed;
+                    this.dx = Math.sin(this.deegres)*shellSpeed;
+                    this.display = function() {
+                        ctx.beginPath();
+                        ctx.strokeStyle = this.color;
+                        this.xx = Math.sin(this.deegres)*this.l;
+                        this.yy = Math.cos(this.deegres)*this.l;
+                        ctx.lineWidth = 5;
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineTo(this.x+this.xx, this.y+this.yy); 
+                        ctx.fillStyle = this.color;
+                        ctx.fill();
+                        ctx.stroke()
+                    }
+                }
+                function cible(cw, ch, type) {
+                    var RandomX = Math.random() * (cw-400) + 200;
+                    var RandomY = Math.random() * (ch-200) + 100;
+                    this.ox = RandomX;
+                    this.oy = RandomY;
+                    this.color = 'red';
+                    this.angle=0;
+                    this.drayon = 75;
+                    this.speed = 2;
+                    var dx=0;
+                    var dy=0;
+                    this.display = function() {
+                        ctx.beginPath();
+                        ctx.strokeStyle = this.color;
+                        ctx.fill();
+                        if (type == 2) {
+                            dx = Math.sin(this.angle)*this.drayon;
+                            dy = Math.cos(this.angle)*this.drayon;
+                        } else if (type == 1) {
+                            if (Completed > 1 && Completed < 200) {
+                                dx+=this.speed;
+                            } else if (Completed>200 && Completed < 300) {
+                                dy-=this.speed;
+                                
+                            } else if (Completed> 300 && Completed < 500) {
+                                dx-=this.speed;
+                                
+                            } else if (Completed> 500 && Completed < 600) {
+                                dy+=this.speed;
+                            } else if (Completed > 599) {
+                                Completed = 2;
+                            }
+                        }
+                        this.x = this.ox+dx;
+                        this.y = this.oy+dy;
+                        ctx.arc(this.x, this.y, 25, 0, 2 * Math.PI);
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+                function Jauge(posx4, posy4) {
+                    this.x = posx4;
+                    this.y = posy4;
+                    this.power = Math.PI;
+                    this.display = function() {
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'red';
+                        ctx.fill()
+                        ctx.arc(this.x, this.y, 25, 0, Math.PI, true);
+                        ctx.lineWidth = 10;
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.strokeStyle = '#f1f1f1';
+                        ctx.fill()
+                        ctx.arc(this.x, this.y, 25, 0, this.power, true);
+                        ctx.lineWidth = 10;
+                        ctx.stroke();
+                    }
+                }
+                function disableScroll(e){
+	
+                if (e.keyCode) {
+                    /^(32|33|34|35|36|38|40)$/.test(e.keyCode) && e.preventDefault();
+                }else {
+                    e.preventDefault();
+                }
+
+            }
+
+            addEventListener("keydown", disableScroll, false);
+            </script>
+    </body>
+</html>

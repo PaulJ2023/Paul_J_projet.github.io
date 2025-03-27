@@ -1,0 +1,289 @@
+<html>
+    <head>
+        <title>Minesweeper</title>
+    </head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="utf-8">
+    <style>
+        canvas {
+            width: 100%;
+            height: auto;
+        }
+        body {
+            background-color: white;
+        }
+        #Minestand {
+            font-family: sans-serif;
+            position: relative;
+            top: 1px; left: 1px;
+        }
+        .cen {
+            text-align: center;
+            margin-left: 20%;
+            margin-right: 20%;
+        }
+        .bu {
+            text-align: center;
+            margin-left: 20%;
+            margin-right: 20%;   
+        }
+    </style>
+    <body onload="easy()">
+        <nav class="navbar navbar-light bg-light">
+            <div class="container d-flex flex-column flex-md-row justify-content-between">
+                        <p id="Minestand"></p>
+                        <p id="Crn">0:0:0</p>
+            </div>
+        </nav>
+        <div class="cen">
+            <canvas id = "canvas" width="100%" height="100%" class="cols-sm-4"></canvas>
+            </div>
+        </div>
+        <footer class="container py-5">
+                <div class="bu">
+                <h4 id="State">Welcome !</h4>
+                <button type="button" class="btn btn-success" onclick="easy()">Simple</button>
+                <button type="button" class="btn btn-primary" onclick="betwen()">Medium</button>
+            </div>
+        </footer>
+        <script>
+
+            function exemple2Dimensions() {
+                var tabl = new Array(new Array());
+                for (var x = 0; x < 20; x++) {
+                    for (var y = 0; y < 15; y++) {
+                        tabl[x][y] = new Minezone(x*31, y*31, false);
+                    }
+                }
+            }
+            function exempleClicked(event){
+                var x = Math.floor(event.x / 31);
+                var y = Math.floor(event.y / 31);
+                tabl[x][y].wasClicked();
+            }
+            var touch = [];
+            var minecount = 0;
+            var minning = false;
+            var alea = [];
+            var aleay = 0;
+            var aleay=0;
+            var ctx = 0;
+            var x=0;
+            var xx = 0;
+            var yy = 0;
+            var identifier  = 0;
+            var clavier  = 0;
+            var minecount2 = 0;
+            var counter = minecount;
+            var arr = [];
+            var firstclick = 0;
+            var cntInterval = 0;
+            var cols = 0;
+            var lines = 0
+            var canvasX = 0;
+            var canvasY = 0;
+            var sec = 0;
+            var min = 0;
+            var hr = 0;
+            var cordonX = 0;
+            var cordonY = 0;
+            var cas = 0;
+            var puissance = 0;
+            function easy(){
+                minecount = 20;
+                cols = 12;
+                lines = 12;
+                canvasX = 393
+                canvasY = 392;
+                cas = 1;
+                firstclick = true;
+                start();
+            }
+            function betwen() {
+                minecount = 30;
+                cols = 16;
+                lines = 19;
+                canvasX = 524;
+                canvasY = 624;
+                firstclick = true;
+                start();
+            }
+            function impossible() {
+                minecount = 55;
+                cols = 24;
+                lines = 19;
+                canvasX = 786;
+                canvasY = 624;
+                cas = 3;
+                firstclick = true;
+                start();
+            }
+            function start() {
+                minecount2 = minecount;
+                minecount3 = minecount;
+                sec = 0;
+                min = 0;
+                hr = 0;
+                document.getElementById('Minestand').textContent = minecount2;
+                canvas = document.getElementById('canvas');
+                canvas.width = canvasX;
+                canvas.height = canvasY;
+                ctx = canvas.getContext('2d');
+                var i = 0;
+                touch=[];
+                arr=[];
+                Wasminning = false;
+                for (var posx = 0; posx < cols; posx++) {
+                    touch[posx] = [];
+                    for (var posy = 0; posy < lines; posy++) {
+                        touch[posx][posy] = new Minezone(posx*33, posy*33, Wasminning);
+                        arr[posx*lines+posy] = touch[posx][posy];
+                        touch[posx][posy].display();
+                        Wasminning = false;
+                    }
+                }           
+                canvas.addEventListener("mousedown", cliked, false);
+                someElement.addEventListener('touchstart', function(e) {
+                    for (var i=0; i < e.targetTouches.length; i++) {
+                        puissance = e.targetTouches[i].force;
+                    }   
+                }, false);
+                jQuery(canvas).bind("contextmenu", function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+            }
+            function co() {
+                sec++;
+                if (sec > 60) {
+                    sec = 0;
+                    min++;
+                }
+                if (min > 60) {
+                    min = 0;
+                    hr++;
+                }
+//                window.setTimeout(co, 1000);
+                document.getElementById('Crn').textContent = hr+":"+min+":"+sec;    
+            }  
+            function MinesDispers() {
+                for (var i = 0; i<minecount; i++) {
+                    aleax = Math.floor(Math.random()*arr.length);
+                    arr[aleax].minning = true;
+                    arr[aleax].display();
+                    arr.splice(aleax,1);
+                }  
+            }
+            var arrAutour = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+            function getNbMinesAutour(x, y) {
+                var nbMines = 0;
+                for (var i = 0; i < arrAutour.length; i++) {
+                    var tx = x+arrAutour[i][0];
+                    var ty = y+arrAutour[i][1];
+                    if (tx < 0 || tx >= touch.length ||
+                            ty < 0 || ty >= touch[0].length) {
+                        continue;
+                    }
+                    if (touch[tx][ty].minning) {
+                        nbMines ++;
+                    }
+                }
+                return nbMines;
+            }
+
+            function regardeAutour(x,y){
+                var nbMines = getNbMinesAutour(x,y);
+                touch[x][y].text = ""+nbMines;
+                touch[x][y].color = "rgb(179, 255, 179)";
+                if (nbMines == 0) {
+                    touch[x][y].text = " ";
+                    touch[x][y].color = "rgb(179, 255, 179)";
+                }
+                touch[x][y].display();
+                if (nbMines == 0) {
+                    for (var i = 0; i < arrAutour.length; i++) {
+                        var tx = x+arrAutour[i][0];
+                        var ty = y+arrAutour[i][1];
+                        if (tx < 0 || tx >= touch.length ||
+                                ty < 0 || ty >= touch[0].length) {
+                            continue;
+                        }
+                        if (!touch[tx][ty].minning && touch[tx][ty].text === "")  {
+                            regardeAutour(tx, ty);
+                        }
+                    }
+                }
+            }
+
+            function cliked(event) {
+                cordonX = event.offsetX;
+                cordonY = event.offsetY;
+                var zFactor = canvas.clientHeight / canvas.height
+                var x = Math.floor(cordonX / (33*zFactor));
+                var y = Math.floor(cordonY / (33*zFactor));
+                if (firstclick) {
+                    var indexArr = x * lines + y;
+                    if (cntInterval > 0) {
+                        window.clearInterval(cntInterval);
+                    }
+                    cntInterval = window.setInterval(co, 1000);
+                    arr.splice(indexArr, 1);
+                    MinesDispers();
+                    firstclick = false;
+                }
+                if (event.button == 2 && touch[x][y].descovery == false || puissance > 0.7 && touch[x][y].descovery == false) {
+                    touch[x][y].descovery = true;
+                    touch[x][y].color = "rgb(255, 255, 0)";
+                    touch[x][y].display();
+                    if (touch[x][y].minning == true) {
+                        minecount2--;
+                        minecount3--;
+                        document.getElementById('Minestand').textContent = minecount2;
+                        if (minecount3 == 0) {
+                            document.getElementById('State').textContent = "You win !";
+                            start();
+                        }
+                        if (minecount2 < 0) {
+                            minecount2 = 0;
+                        }
+                    } else {
+                        minecount2--;
+                        document.getElementById('Minestand').textContent = minecount2;
+                    }
+                } else {
+                    if (touch[x][y].minning && touch[x][y].descovery == false) {
+                        document.getElementById('State').textContent = "Loser !";
+                        easy();
+                    } else {
+                        regardeAutour(x,y);
+                    }
+                }
+                return;
+            }
+
+            function Minezone(posx, posy, minning) {
+                this.x = posx;
+                this.y = posy;
+                this.color = "rgb(0, 179, 0)";
+                this.width = 30;
+                this.height = 30;
+                this.text = "";
+                this.minning = minning;
+                this.demined = false;
+                this.descovery = false;
+                this.display = function () {
+                    //this.minning ? "black" : 
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                    ctx.font = "20px Arial"
+                    ctx.fillStyle = "black";
+                    ctx.fillText(this.text, this.x+10, this.y+this.height-10);
+                }
+            }
+        </script>
+            <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    </body>
+</html>
